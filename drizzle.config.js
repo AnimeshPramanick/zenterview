@@ -7,9 +7,7 @@ module.exports = defineConfig({
   dialect: "postgresql",
   schema: "./utils/schema.js",
   dbCredentials: {
-    dbCredentials: {
-      url: "postgresql://neondb_owner:npg_rspP4LdFcbj0@ep-crimson-leaf-a8y6nh3e-pooler.eastus2.azure.neon.tech/zenterview?sslmode=require",
-    },
+    url: process.env.DRIZZLE_DATABASE_URL,
   },
   migrations: {
     prefix: "timestamp",
