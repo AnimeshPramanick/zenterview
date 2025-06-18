@@ -7,7 +7,7 @@ module.exports = defineConfig({
   dialect: "postgresql",
   schema: "./utils/schema.js",
   dbCredentials: {
-    url: process.env.DRIZZLE_DATABASE_URL,
+    url: process.env.NEXT_PUBLIC_DRIZZLE_DATABASE_URL,
   },
   migrations: {
     prefix: "timestamp",
