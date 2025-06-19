@@ -1,16 +1,15 @@
 "use client";
-import useSpeechToText from "react-hook-speech-to-text";
+import "regenerator-runtime/runtime";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Webcam from "react-webcam";
-import { Mic, StopCircle, StopCircleIcon } from "lucide-react";
+import { Mic, StopCircle, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { chatSession } from "@/utils/GeminiAiModel";
-import { db } from "@/utils/db";
-import { UserAnswer } from "@/utils/schema";
-import { useUser } from "@clerk/nextjs";
-import moment from "moment";
 
 function RecordAnswerSection({
   mockInterviewQuestion,
@@ -18,78 +17,89 @@ function RecordAnswerSection({
   interviewData,
 }) {
   const [userAnswer, setUserAnswer] = useState("");
-  const { user } = useUser();
-  const [loading, setLoading] = useState(false);
-
   const {
-    error,
-    interimResult,
-    isRecording,
-    results,
-    startSpeechToText,
-    stopSpeechToText,
-  } = useSpeechToText({
-    continuous: true,
-    useLegacyResults: false,
-  });
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+    isMicrophoneAvailable,
+  } = useSpeechRecognition();
 
   useEffect(() => {
-    results.map((result) =>
-      setUserAnswer((prevAns) => prevAns + result?.transcript)
-    );
-  }, [results]);
+    setUserAnswer(transcript);
+  }, [transcript]);
 
-  useEffect(() => {
-    if (!isRecording && userAnswer.length > 10) {
-      UpdateUserAnswer();
-    }
-  }, [userAnswer]);
-
-  const StartStopRecording = async () => {
-    if (isRecording) {
-      stopSpeechToText();
+  const SaveUserAnswer = async () => {
+    if (listening) {
+      SpeechRecognition.stopListening();
+      if (userAnswer?.length < 10) {
+        toast("ERROR While Saving Your Answer , please Record Again!!");
+        return;
+      }
+      const feedbackPrompt =
+        "Question:" +
+        mockInterviewQuestion[activeQuestionIndex]?.question +
+        ", User Answer" +
+        userAnswer +
+        ",Depends on question user answer for given interview questions " +
+        "please give us rating for answer ans feedback as area of improvement if any " +
+        "in just 3 to 5 line to improve in in JSON format with rating field and feedback field ";
+      const result = await chatSession.sendMessage(feedbackPrompt);
+      const MockJsonResp = result.response
+        .text()
+        .replace("```json", "")
+        .replace("```", "");
+      console.log(MockJsonResp);
     } else {
-      startSpeechToText();
+      resetTranscript();
+      SpeechRecognition.startListening({ continuous: true });
     }
   };
 
-  const UpdateUserAnswer = async () => {
-    console.log(userAnswer);
-    setLoading(true);
-    const feedbackPrompt =
-      "Question:" +
-      mockInterviewQuestion[activeQuestionIndex]?.question +
-      ", User Answer" +
-      userAnswer +
-      ",Depends on question user answer for given interview questions " +
-      "please give us rating for answer ans feedback as area of improvement if any " +
-      "in just 3 to 5 line to improve in in JSON format with rating field and feedback field ";
-    const result = await chatSession.sendMessage(feedbackPrompt);
+  if (!browserSupportsSpeechRecognition) {
+    return (
+      <div className="flex items-center justify-center flex-col">
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 flex items-center">
+          <AlertCircle className="text-yellow-400 mr-2" />
+          <p className="text-sm text-yellow-700">
+            Speech recognition is not supported in this browser. Please use
+            Chrome, Edge, or another supported browser.
+          </p>
+        </div>
+        <div className="flex flex-col items-center justify-center bg-primary rounded-2xl p-5 my-10 ">
+          <Image
+            src={"/webcam.png"}
+            width={200}
+            height={200}
+            className="absolute"
+            alt="webcam"
+          />
+          <div className="overflow-hidden rounded-2xl w-full max-w-md">
+            <Webcam
+              mirrored={true}
+              className="w-full h-[310px] object-cover z-10"
+            />
+          </div>
+        </div>
+        <Button variant="outline" disabled className="mb-6 text-primary">
+          Browser Not Supported
+        </Button>
+      </div>
+    );
+  }
 
-    const MockJsonResp = result.response
-      .text()
-      .replace("```json", "")
-      .replace("```", "");
-    console.log(MockJsonResp);
-    const JsonFeedbackResp = JSON.parse(MockJsonResp);
-
-    const resp = await db.insert(UserAnswer).values({
-      mockIdRef: interviewData?.mockId,
-      question: mockInterviewQuestion[activeQuestionIndex]?.question,
-      correctAns: mockInterviewQuestion[activeQuestionIndex]?.answer,
-      userAns: userAnswer,
-      feedback: JsonFeedbackResp?.feedback,
-      rating: JsonFeedbackResp?.rating,
-      userEmail: user?.primaryEmailAddress?.emailAddress,
-      createdAt: moment().format("DD-MM-yyyy"),
-    });
-
-    if (resp) {
-      toast("User Answer recorded successfully");
-    }
-    setUserAnswer("");
-    setLoading(false);
-  };
+  if (!isMicrophoneAvailable) {
+    return (
+      <div className="flex items-center justify-center flex-col">
+        <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4 flex items-center">
+          <AlertCircle className="text-red-400 mr-2" />
+          <p className="text-sm text-red-700">
+            Please allow microphone access to use speech recognition.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center flex-col">
@@ -109,12 +119,11 @@ function RecordAnswerSection({
         </div>
       </div>
       <Button
-        disabled={loading}
         variant="outline"
-        onClick={StartStopRecording}
+        onClick={SaveUserAnswer}
         className="mb-6 text-primary"
       >
-        {isRecording ? (
+        {listening ? (
           <h2 className="flex gap-2 text-red-600 items-center">
             <StopCircle />
             Stop Recording
