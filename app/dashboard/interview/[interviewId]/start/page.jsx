@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import QuestionSection from "./_components/QuestionSection";
 import RecordAnswerSection from "./_components/RecordAnswerSection";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 function StartInterview({ params }) {
   const Params = React.use(params);
@@ -65,7 +66,11 @@ function StartInterview({ params }) {
           </Button>
         )}
         {activeQuestionIndex == mockInterviewQuestion?.length - 1 && (
-          <Button variant="destructive">End Interview</Button>
+          <Link
+            href={"/dashboard/interview/" + interviewData?.mockId + "/feedback"}
+          >
+            <Button variant="destructive">End Interview</Button>
+          </Link>
         )}
       </div>
     </div>
