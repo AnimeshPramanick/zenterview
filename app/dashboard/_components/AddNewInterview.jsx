@@ -53,23 +53,24 @@ function AddNewInterview() {
       .replace("```", "");
     console.log(JSON.parse(MockJsonResp));
     setJsonResponse(MockJsonResp);
-
-    const resp = await db
-      .insert(MockInterview)
-      .values({
-        mockId: uuidv4(),
-        jsonMockResp: MockJsonResp,
-        jobPosition: jobPosition,
-        jobDesc: jobDescription,
-        jobExperience: jobExperience,
-        createdBy: user?.primaryEmailAddress?.emailAddress,
-        createdAt: moment().format("DD-MM-YYYY"),
-      })
-      .returning({ mockId: MockInterview.mockId });
-    console.log("inserted", resp);
-    if (resp) {
-      setOpenDialog(false);
-      router.push("/dashboard/interview/" + resp[0]?.mockId);
+    if (MockJsonResp) {
+      const resp = await db
+        .insert(MockInterview)
+        .values({
+          mockId: uuidv4(),
+          jsonMockResp: MockJsonResp,
+          jobPosition: jobPosition,
+          jobDesc: jobDescription,
+          jobExperience: jobExperience,
+          createdBy: user?.primaryEmailAddress?.emailAddress,
+          createdAt: moment().format("DD-MM-YYYY"),
+        })
+        .returning({ mockId: MockInterview.mockId });
+      console.log("inserted ID ", resp);
+      if (resp) {
+        setOpenDialog(false);
+        router.push("/dashboard/interview/" + resp[0]?.mockId);
+      }
     }
     setLoading(false);
   };
