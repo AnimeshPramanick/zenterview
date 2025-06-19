@@ -42,7 +42,11 @@ function StartInterview({ params }) {
           activeQuestionIndex={activeQuestionIndex}
         />
         {/* video / audio recording */}
-        <RecordAnswerSection />
+        <RecordAnswerSection
+          mockInterviewQuestion={mockInterviewQuestion}
+          activeQuestionIndex={activeQuestionIndex}
+          interviewData={interviewData}
+        />
       </div>
     </div>
   );
