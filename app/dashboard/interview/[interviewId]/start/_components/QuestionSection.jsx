@@ -1,10 +1,26 @@
-import { Lightbulb } from "lucide-react";
+import {
+  Lightbulb,
+  Volume,
+  Volume1,
+  Volume1Icon,
+  Volume2,
+  Volume2Icon,
+} from "lucide-react";
 import React, { useEffect } from "react";
 
 function QuestionSection({ mockInterviewQuestion, activeQuestionIndex }) {
   useEffect(() => {
     console.log(mockInterviewQuestion);
   });
+
+  const textToSpeach = (text) => {
+    if ("speechSynthesis" in window) {
+      const speech = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(speech);
+    } else {
+      alert("Sorry your browser does not support text to Speech");
+    }
+  };
 
   return (
     mockInterviewQuestion && (
@@ -27,6 +43,11 @@ function QuestionSection({ mockInterviewQuestion, activeQuestionIndex }) {
         <h2 className="my-10 text-md md:text-lg">
           {mockInterviewQuestion[activeQuestionIndex]?.question}
         </h2>
+        <Volume2Icon
+          onClick={() =>
+            textToSpeach(mockInterviewQuestion[activeQuestionIndex]?.question)
+          }
+        />
 
         <div className="border rounded-2xl p-5 bg-blue-100 mt-20">
           <h2 className="flex gap-2 text-primary">

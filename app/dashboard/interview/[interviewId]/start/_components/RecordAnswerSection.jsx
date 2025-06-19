@@ -1,10 +1,14 @@
+"use client";
 import useSpeechToText from "react-hook-speech-to-text";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Webcam from "react-webcam";
+import { Mic } from "lucide-react";
 
 function RecordAnswerSection() {
+  const [userAnswer, setUserAnswer] = useState("");
+
   const {
     error,
     interimResult,
@@ -17,48 +21,44 @@ function RecordAnswerSection() {
     useLegacyResults: false,
   });
 
+  useEffect(() => {
+    results.map((result) =>
+      setUserAnswer((prevAns) => prevAns + result?.transcript)
+    );
+  }, [results]);
+
   return (
     <div className="flex items-center justify-center flex-col">
-      <div className="flex flex-col items-center justify-center bg-primary rounded-2xl p-5 my-10 relative">
-        {/* Background Image */}
+      <div className="flex flex-col items-center justify-center bg-primary rounded-2xl p-5 my-10 ">
         <Image
           src={"/webcam.png"}
           width={200}
           height={200}
-          className="absolute z-0 opacity-30"
+          className="absolute"
           alt="webcam"
         />
-
-        {/* Webcam Video */}
-        <div className="overflow-hidden rounded-2xl w-full max-w-md z-10">
-          <Webcam mirrored={true} className="w-full h-[310px] object-cover" />
+        <div className="overflow-hidden rounded-2xl w-full max-w-md">
+          <Webcam
+            mirrored={true}
+            className="w-full h-[310px] object-cover z-10"
+          />
         </div>
       </div>
-
-      {/* Toggle Button */}
       <Button
-        onClick={isRecording ? stopSpeechToText : startSpeechToText}
         variant="outline"
-        className="mb-4"
+        onClick={isRecording ? startSpeechToText : startSpeechToText}
+        className="mb-6"
       >
-        {isRecording ? "Stop Recording" : "Start Recording"}
+        {isRecording ? (
+          <h2 className="flex gap-2 text-red-600">
+            <Mic />
+            Stop Recording
+          </h2>
+        ) : (
+          "Record Answer"
+        )}
       </Button>
-
-      {/* Status */}
-      <h1 className="mb-4 font-medium">
-        Recording: {isRecording ? "Yes" : "No"}
-      </h1>
-
-      {/* Results */}
-      <ul className="text-center space-y-2">
-        {results.map((result, index) => (
-          <li key={index}>{result.transcript}</li>
-        ))}
-        {interimResult && <li className="text-gray-500">{interimResult}</li>}
-      </ul>
-
-      {/* Error */}
-      {error && <p className="text-red-600 mt-4">Error: {error}</p>}
+      <Button onClick={() => console.log(userAnswer)}>Show Answer</Button>
     </div>
   );
 }
