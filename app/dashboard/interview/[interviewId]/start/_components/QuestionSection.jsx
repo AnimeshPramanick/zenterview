@@ -1,11 +1,4 @@
-import {
-  Lightbulb,
-  Volume,
-  Volume1,
-  Volume1Icon,
-  Volume2,
-  Volume2Icon,
-} from "lucide-react";
+import { Lightbulb, Volume2Icon } from "lucide-react";
 import React, { useEffect } from "react";
 
 function QuestionSection({ mockInterviewQuestion, activeQuestionIndex }) {
