@@ -38,7 +38,7 @@ function StartInterview({ params }) {
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* quesyions */}
+        {/* questions */}
         <QuestionSection
           mockInterviewQuestion={mockInterviewQuestion}
           activeQuestionIndex={activeQuestionIndex}
@@ -50,14 +50,15 @@ function StartInterview({ params }) {
           interviewData={interviewData}
         />
       </div>
-      <div className="flex justify-end gap-5">
-        {activeQuestionIndex > 0 && (
-          <Button
-            onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}
-          >
-            Previous
-          </Button>
-        )}
+      <div className="flex justify-between mt-2 mr-5  md:col-span-2">
+        <Button
+          onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}
+          className={
+            activeQuestionIndex === 0 ? "invisible pointer-events-none" : ""
+          }
+        >
+          Previous
+        </Button>
         {activeQuestionIndex != mockInterviewQuestion?.length - 1 && (
           <Button
             onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)}

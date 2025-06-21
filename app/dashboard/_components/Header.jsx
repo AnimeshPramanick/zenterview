@@ -11,7 +11,7 @@ function Header() {
   }, []);
 
   return (
-    <div className="flex p-4 items-center justify-between bg-gray-300/20 backdrop-blur-lg shadow-md rounded-b-2xl">
+    <div className="flex p-4 items-center justify-between bg-black backdrop-blur-lg shadow-md rounded-b-2xl">
       <Image
         src="/logo.svg"
         alt="logo"

@@ -22,7 +22,7 @@ function RecordAnswerSection({
   const { user } = useUser();
 
   const [userAnswer, setUserAnswer] = useState("");
-  const [webcamOn, setWebcamOn] = useState(true);
+  const [webcamOn, setWebcamOn] = useState(false); // Set webcam off by default
   const [mounted, setMounted] = useState(false);
   const {
     transcript,
@@ -35,6 +35,13 @@ function RecordAnswerSection({
   useEffect(() => {
     setMounted(true);
     setUserAnswer(transcript);
+    // Check localStorage for webcam state
+    if (typeof window !== "undefined") {
+      const storedWebcam = localStorage.getItem("zenterview-webcam-enabled");
+      if (storedWebcam !== null) {
+        setWebcamOn(JSON.parse(storedWebcam));
+      }
+    }
   }, [transcript]);
 
   const SaveUserAnswer = async () => {

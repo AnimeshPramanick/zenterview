@@ -84,7 +84,16 @@ function Interview({ params }) {
           <Button
             variant="outline"
             className="w-full mt-4 max-w-md"
-            onClick={() => setWebCamEnabled((prev) => !prev)}
+            onClick={() => {
+              setWebCamEnabled((prev) => {
+                const newState = !prev;
+                localStorage.setItem(
+                  "zenterview-webcam-enabled",
+                  JSON.stringify(newState)
+                );
+                return newState;
+              });
+            }}
           >
             {webCamEnabled ? "Disable Webcam & Mic" : "Enable Webcam & Mic"}
           </Button>

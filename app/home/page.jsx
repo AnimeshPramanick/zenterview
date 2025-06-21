@@ -1,11 +1,9 @@
-"use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-100 to-white p-8">
       <div className="max-w-2xl w-full text-center">
         <Image
           src="/logo.svg"
@@ -22,16 +20,15 @@ export default function Home() {
           experiences. Sign in to get started or explore your dashboard.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/dashboard">
-            <Button className="px-6 py-2  rounded  transition">Sign In</Button>
+          <Link href="/sign-in">
+            <button className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+              Sign In
+            </button>
           </Link>
-          <Link href="/dashboard">
-            <Button
-              variant="outline"
-              className="px-6 py-2 rounded hover:bg-gray-300 transition"
-            >
+          <Link href="/sign-up">
+            <button className="px-6 py-2 bg-gray-200 text-blue-700 rounded hover:bg-gray-300 transition">
               Sign Up
-            </Button>
+            </button>
           </Link>
         </div>
       </div>

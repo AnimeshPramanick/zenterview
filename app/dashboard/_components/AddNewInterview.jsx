@@ -78,13 +78,13 @@ function AddNewInterview() {
   return (
     <div>
       <div
-        className="border p-10 rounded-2xl bg-secondary hover:scale-105 hover:shadow-md cursor-pointer transition-all "
+        className="border p-10 rounded-2xl bg-primary hover:scale-105 hover:shadow-md cursor-pointer transition-all "
         onClick={() => setOpenDialog(true)}
       >
-        <h2 className="font-bold text-center">+ Add New</h2>
+        <h2 className="font-bold text-center text-white">+ Add New</h2>
       </div>
-      <Dialog open={openDialog}>
-        <DialogContent className="!max-w-2xl">
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="!max-w-2xl" showCloseButton={true}>
           <DialogHeader>
             <DialogTitle>Tell us more about your job Interviwing</DialogTitle>
             <DialogDescription asChild>
